@@ -27,6 +27,10 @@ int main()
     matmult_v1(A, B, C, l, m, n);
     matmult_v2(A, B, C, l, m, n);
 
+    printMatrix(A, l, m);
+    printMatrix(B, m, n);
+    printMatrix(C, l, n);
+
     free(A);
     free(B);
     free(C);
@@ -49,7 +53,6 @@ void populateMatrix(int *X, int nrow, int ncol)
                                    +(j*nrow+ncol))
                                 ) %29311%10;
 }
-
 
 
 /*

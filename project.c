@@ -25,7 +25,7 @@ int main()
     printMatrix(C, l, n);
 
     matmult_v1(A, B, C, l, m, n);
-    matmult_v2(A, B, C, l, m, n);
+    // matmult_v2(A, B, C, l, m, n);
 
     printMatrix(A, l, m);
     printMatrix(B, m, n);

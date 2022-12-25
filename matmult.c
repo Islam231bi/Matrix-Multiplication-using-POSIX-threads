@@ -1,11 +1,12 @@
 #include<stdlib.h>
 #include<pthread.h>
+#include<stdio.h>
 
-struct arg_struct {
+typedef struct arg_struct {
     int *A;
     int *B;
-    int i,k,j,n,m;
-};
+    int i,j,n,m,l;
+}arg_struct;
 
 
 
@@ -30,14 +31,18 @@ void matmult(int* A, int* B, int* C, int l, int m, int n)
         }
 }
 
-void* get_element(void* argument){
+
+void* mul_element(void* argument){
     struct arg_struct *args = (struct arg_struct *)argument;
 
-    int  *sum = (int *)malloc(sizeof(int)); 
+    int  *sum = (int *)malloc(sizeof(int));
+    int s = 0;
 
-    *sum+= Item(args->A, args->i, args->k, args->m) * Item(args->B, args->k, args->j, args->n);
+    for(int k=0; k<args->m; k++)
+        s+= Item(args->A, args->i, k, args->m) * Item(args->B, k, args->j, args->n);
 
-    return sum;
+    *sum = s;
+    pthread_exit(sum);
 
 }
 
@@ -50,26 +55,33 @@ void* get_element(void* argument){
  */
 void matmult_v1(int* A, int* B, int* C, int l, int m, int n)
 {
-    pthread_t t[l*n];
+    int thread_cnt = l*n;
+    pthread_t t[thread_cnt];
     int cnt = -1;
+    void* sum;
 
-    struct arg_struct *args;
+    arg_struct *args = (arg_struct *) malloc(sizeof(arg_struct));
     args->A = A; args->B = B;
+    args->m = m ; args->n = n; args->l = l;
 
-    for(int i=0; i<l; i++){
+    for (int i=0; i<l; i++){
         for(int j=0; j<n; j++)
         {
             cnt++;
-            int *sum;
-            for(int k=0; k<m; k++){
-                args->i = i; args->j = j; args->k = k; args->m = m ; args->n = n;
-                pthread_create(&t[cnt],NULL,get_element, args);
-                pthread_join(t[cnt],&sum);
-            }
-
-            Item(C, i, j, n) = *sum;
+            args->i = i; args->j = j;
+            pthread_create(&t[cnt],NULL,mul_element, args);
         }
     }
+
+    cnt = -1;
+    for (int i = 0 ; i< l ; i++){
+        for(int j = 0 ; j < n ; j++){
+            cnt++;
+            pthread_join(t[cnt],&sum);
+            int *p = (int*)sum;
+            Item(C, i, j, n) = *p;
+        }
+    }  
 }
 
 

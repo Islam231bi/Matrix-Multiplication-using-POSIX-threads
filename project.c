@@ -9,6 +9,7 @@ extern void matmult_v2(int* A, int* B, int* C, int l, int m, int n);
 void populateMatrix(int *X, int nrow, int ncol);
 void printMatrix(int *X, int nrow, int ncol);
 int main()
+
 {
     int l=3, m=4, n=5;
     int *A = (int*)malloc(l*m*sizeof(int));
@@ -24,8 +25,9 @@ int main()
     printMatrix(B, m, n);
     printMatrix(C, l, n);
 
+
     matmult_v1(A, B, C, l, m, n);
-    // matmult_v2(A, B, C, l, m, n);
+    // // // matmult_v2(A, B, C, l, m, n);
 
     printMatrix(A, l, m);
     printMatrix(B, m, n);

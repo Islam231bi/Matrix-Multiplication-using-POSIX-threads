@@ -11,7 +11,7 @@ void printMatrix(int *X, int nrow, int ncol);
 int main()
 
 {
-    int l=3, m=4, n=5;
+    int l=2, m=2, n=2;
     int *A = (int*)malloc(l*m*sizeof(int));
     int *B = (int*)malloc(m*n*sizeof(int));
     int *C = (int*)malloc(l*n*sizeof(int));
@@ -19,15 +19,20 @@ int main()
     populateMatrix(A, l, m);
     populateMatrix(B, m, n);
 
-    matmult(A, B, C, l, m, n);
+    // matmult(A, B, C, l, m, n);
 
-    printMatrix(A, l, m);
-    printMatrix(B, m, n);
-    printMatrix(C, l, n);
+    // printMatrix(A, l, m);
+    // printMatrix(B, m, n);
+    // printMatrix(C, l, n);
 
 
-    matmult_v1(A, B, C, l, m, n);
-    // // // matmult_v2(A, B, C, l, m, n);
+    // matmult_v1(A, B, C, l, m, n);
+
+    // printMatrix(A, l, m);
+    // printMatrix(B, m, n);
+    // printMatrix(C, l, n);
+
+    matmult_v2(A, B, C, l, m, n);
 
     printMatrix(A, l, m);
     printMatrix(B, m, n);

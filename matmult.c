@@ -8,7 +8,7 @@ typedef struct arg_struct {
     int *A;
     int *B;
     int *C;
-    int i,j,n,m,l;
+    int i,j,n,m;
 }arg_struct;
 
 
@@ -67,10 +67,11 @@ void matmult_v1(int* A, int* B, int* C, int l, int m, int n)
         {   
             // passing data to each struct 
             arg_struct *args = (arg_struct *) malloc(sizeof(arg_struct));
-            args->A = A; args->B = B; args->C = C;
-            args->m = m ; args->n = n; args->l = l;
+            args->A = A; args->B = B;
+            args->m = m ; args->n = n;
             args->i = i; args->j = j;
             cnt++;
+
             // starting each thread
             pthread_create(&t[cnt],NULL,mul_element, (void*)args);
         }
@@ -79,6 +80,7 @@ void matmult_v1(int* A, int* B, int* C, int l, int m, int n)
     cnt = 0;
     for (int i = 0 ; i< l ; i++){
         for(int j = 0 ; j < n ; j++){
+            // variable to hold returned data from each thread
             void* sum;
             pthread_join(t[cnt++],&sum);
             int *p = (int*)sum;
@@ -91,10 +93,16 @@ void matmult_v1(int* A, int* B, int* C, int l, int m, int n)
 
 
 void* mul_row (void* argument){
+    struct arg_struct *args = (struct arg_struct *)argument;
 
-    
+    for(int j=0; j<args->n; j++){
+        int sum = 0;
+        for(int k=0; k<args->m; k++){
+            sum += Item(args->A, args->i, k, args->m) * Item(args->B, k, j, args->n);
+        }
+        Item(args->C, args->i, j, args->n) = sum;
+    }
 }
-
 
 /*
  * matrix multiplication
@@ -105,6 +113,27 @@ void* mul_row (void* argument){
  */
 void matmult_v2(int* A, int* B, int* C, int l, int m, int n)
 {
+    // thread pool size (size of rows in resulted matrix)
+    int thread_cnt = l;
+    pthread_t *t;
+	t = (pthread_t*)malloc(thread_cnt*sizeof(pthread_t));
+    int cnt = -1;
+    
+    for (int i=0; i<l; i++){   
+        // passing data to each struct 
+        arg_struct *args = (arg_struct *) malloc(sizeof(arg_struct));
+        args->A = A; args->B = B;args->C = C;
+        args->m = m ; args->n = n;
+        args->i = i;
+        cnt++;
 
+        // starting each thread
+        pthread_create(&t[cnt],NULL,mul_row, (void*)args);      
+    }
+    
+    cnt = 0;
+    for (int i = 0 ; i< l ; i++){
+        pthread_join(t[cnt++],NULL);
+    }  
 }
 
